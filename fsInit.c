@@ -61,6 +61,7 @@ void initFreeSpace(uint64_t totalBlocks) {
 
 int initFileSystem(uint64_t numberOfBlocks, uint64_t blockSize) {
     if (numberOfBlocks != VOLUME_SIZE || blockSize != BLOCK_SIZE) {
+        printf("Error: Volume size or block size does not match expected values.\n");
         return -1; // Return an error code if they don't match
     }
 
@@ -85,17 +86,24 @@ int initFileSystem(uint64_t numberOfBlocks, uint64_t blockSize) {
     printf("Initializing the root directory...\n");
 
     // Write the VCB, free space data, and root directory to the filesystem
-    if (b_write(0, (char*)&vcb, sizeof(struct fs_vcb) != 0)) {
+    int writeResult = b_write(0, (char*)&vcb, sizeof(struct fs_vcb));
+    if (writeResult < 0) {
+        printf("Error writing VCB: %d\n", writeResult);
         exitFileSystem();
         return -1;
     }
-    if (b_write(2, (char*)rootDirectory, 2 * sizeof(struct fs_diriteminfo) != 0)) {
+    
+    writeResult = b_write(2, (char*)rootDirectory, 2 * sizeof(struct fs_diriteminfo));
+    if (writeResult < 0) {
+        printf("Error writing root directory: %d\n", writeResult);
         exitFileSystem();
         return -1;
     }
 
     // Display the VCB contents
     displayVCB(&vcb);
+
+    printf("Initialized File System\n");
 
     return 0; // Indicate success
 }
