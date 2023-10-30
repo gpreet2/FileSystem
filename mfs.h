@@ -1,9 +1,10 @@
 /**************************************************************
-* Class:  CSC-415
-* Name: Professor Bierman
-* Student ID: N/A
+ Class:  CSC-415-01 Fall 2023
+* Names: Babak Milani , Mozhgan Ahsant, Bisum Tiwana, Gurpreet Natt
+* Student IDs: 920122577, 921771510, 920388011, 922883894
+* GitHub Name: babakmilani, AhsantMozhgan, SpindlyGold019, gpreet2
+* Group Name: Team 05
 * Project: Basic File System
-*
 * File: mfs.h
 *
 * Description: 
@@ -21,6 +22,7 @@
 #include "b_io.h"
 
 #include <dirent.h>
+#include "dirStructInt.h"
 #define FT_REGFILE	DT_REG
 #define FT_DIRECTORY DT_DIR
 #define FT_LINK	DT_LNK
@@ -32,14 +34,22 @@ typedef u_int64_t uint64_t;
 typedef u_int32_t uint32_t;
 #endif
 
+
+//Global variables
+
+extern char * cwdPath; //holds the current working dir path
+extern dirEntry * cwdEntries;	//holds the current working directory info
+
+void initGlobalVar();
+void freeGlobalVar();
 // This structure is returned by fs_readdir to provide the caller with information
 // about each file as it iterates through a directory
-struct fs_diriteminfo
+ struct fs_diriteminfo
 	{
     unsigned short d_reclen;    /* length of this record */
     unsigned char fileType;    
     char d_name[256]; 			/* filename max filename is 255 characters */
-	};
+	} ;
 
 // This is a private structure used only by fs_opendir, fs_readdir, and fs_closedir
 // Think of this like a file descriptor but for a directory - one can only read
@@ -49,11 +59,28 @@ struct fs_diriteminfo
 typedef struct
 	{
 	/*****TO DO:  Fill in this structure with what your open/read directory needs  *****/
-	unsigned short  d_reclen;		/* length of this record */
-	unsigned short	dirEntryPosition;	/* which directory entry position, like file pos */
-	//DE *	directory;			/* Pointer to the loaded directory you want to iterate */
-	struct fs_diriteminfo * di;		/* Pointer to the structure you return from read */
+	unsigned short  d_reclen;		/*length of this record */
+	unsigned short	dirEntryPosition;	/*which directory entry position, like file pos */
+	uint64_t	directoryStartLocation;		/*Starting LBA of directory */
+	dirEntry* dirPointer;
+	int dirSize;
+	int fileIndex;
+
 	} fdDir;
+
+//This is a structure used as a return value of the private function parsePath
+typedef struct
+	{
+		dirEntry* DEPointer;
+		int value;
+		char path[256];
+
+	} pathInfo;
+
+//Helper Function
+pathInfo* parsePath(const char *pathname);
+char * getParentDirectory(const char *pathname);
+char * getLastPathElement(const char *pathname);
 
 // Key directory functions
 int fs_mkdir(const char *pathname, mode_t mode);
@@ -70,7 +97,7 @@ int fs_setcwd(char *pathname);   //linux chdir
 int fs_isFile(char * filename);	//return 1 if file, 0 otherwise
 int fs_isDir(char * pathname);		//return 1 if directory, 0 otherwise
 int fs_delete(char* filename);	//removes a file
-
+int fs_move(char* src, char* dest);
 
 // This is the strucutre that is filled in from a call to fs_stat
 struct fs_stat
@@ -86,6 +113,7 @@ struct fs_stat
 	};
 
 int fs_stat(const char *path, struct fs_stat *buf);
+
 
 #endif
 

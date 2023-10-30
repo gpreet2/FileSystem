@@ -43,9 +43,11 @@ CFLAGS= -g -I.
 LIBS =pthread
 DEPS = 
 # Add any additional objects to this list
-
-ADDOBJ = fsInit.o b_io.o
-
+ADDOBJ= fsInit.o
+ADDOBJ1 = freeSpace.o
+ADDOBJ2 = mfs.o
+ADDOBJ3 = extTable.o
+ADDOBJ4 = b_io.o
 ARCH = $(shell uname -m)
 
 ifeq ($(ARCH), aarch64)
@@ -54,7 +56,7 @@ else
 	ARCHOBJ=fsLow.o
 endif
 
-OBJ = $(ROOTNAME)$(HW)$(FOPTION).o $(ADDOBJ) $(ARCHOBJ)
+OBJ = $(ROOTNAME)$(HW)$(FOPTION).o $(ADDOBJ) $(ARCHOBJ) $(ADDOBJ1) $(ADDOBJ2) $(ADDOBJ3) $(ADDOBJ4)
 
 %.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS) 
@@ -63,12 +65,12 @@ $(ROOTNAME)$(HW)$(FOPTION): $(OBJ)
 	$(CC) -o $@ $^ $(CFLAGS) -lm -l readline -l $(LIBS)
 
 clean:
-	rm $(ROOTNAME)$(HW)$(FOPTION).o $(ADDOBJ) $(ROOTNAME)$(HW)$(FOPTION)
+	rm $(ROOTNAME)$(HW)$(FOPTION).o $(ADDOBJ) $(ADDOBJ1) $(ADDOBJ2) $(ADDOBJ3) $(ADDOBJ4) $(ROOTNAME)$(HW)$(FOPTION)
 
 run: $(ROOTNAME)$(HW)$(FOPTION)
 	./$(ROOTNAME)$(HW)$(FOPTION) $(RUNOPTIONS)
 
 vrun: $(ROOTNAME)$(HW)$(FOPTION)
-	valgrind ./$(ROOTNAME)$(HW)$(FOPTION) $(RUNOPTIONS)
+	valgrind --leak-check=full ./$(ROOTNAME)$(HW)$(FOPTION) $(RUNOPTIONS)
 
 
