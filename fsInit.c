@@ -5,13 +5,11 @@
 * GitHub Name:gpreet2
 * Group Name: Group 5
 * Project: Basic File System
-*
+
 * File: fsInit.c
-*
-* Description: Main driver for file system assignment.
-*
-* This file is where you will start and initialize your system
-*
+
+* Description: Main driver for the file system assignment.
+
 **************************************************************/
 #include <stdlib.h>
 #include <stdio.h>
