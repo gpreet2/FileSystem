@@ -1,5 +1,5 @@
 /**************************************************************
- Class:  CSC-415-01 Fall 2023
+ Class:  CSC-415-02 Fall 2023
 * Names: Babak Milani , Mozhgan Ahsant, Bisum Tiwana, Gurpreet Natt
 * Student IDs: 920122577, 921771510, 920388011, 922883894
 * GitHub Name: babakmilani, AhsantMozhgan, SpindlyGold019, gpreet2
@@ -11,13 +11,14 @@
 * Description: extent table interface
 *
 **************************************************************/
+
 #ifndef EXTTABLE_H
 #define EXTTABLE_H
 
-#define NUMBER_OF_EXTENT 64	
-#define EXTENT_BLOCK_SIZE 1	//size of extent table is 1 block --> 512 bytes
+#define NUMBER_OF_EXTTABLE 64	
+#define EXTTABLE_BLOCK_SIZE 1	//size of extent table is 1 block --> 512 bytes
 
-typedef struct extent{
+typedef struct extent {
 	int location;
 	int count;
 	

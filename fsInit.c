@@ -1,5 +1,5 @@
 /**************************************************************
- Class:  CSC-415-01 Fall 2023
+ Class:  CSC-415-02 Fall 2023
 * Names: Babak Milani , Mozhgan Ahsant, Bisum Tiwana, Gurpreet Natt
 * Student IDs: 920122577, 921771510, 920388011, 922883894
 * GitHub Name: babakmilani, AhsantMozhgan, SpindlyGold019, gpreet2
@@ -23,12 +23,12 @@
 
 #include "fsLow.h"
 #include "mfs.h"
-#include "freeSpace.h"
-#include "vcbInt.h"
-#include "dirStructInt.h"
+#include "mapping.h"
+#include "vcb.h"
+#include "dirInit.h"
 
 
-#define MAGIC_NUMBER 0x5A3C7F2A5A3C7F2A
+#define MAGIC_NUMBER 0xEFB112C2EFB112C2
 
 //Redeclaring the vcb global variable
 VCB vcb;

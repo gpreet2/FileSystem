@@ -1,5 +1,5 @@
 /**************************************************************
- Class:  CSC-415-01 Fall 2023
+ Class:  CSC-415-02 Fall 2023
 * Names: Babak Milani , Mozhgan Ahsant, Bisum Tiwana, Gurpreet Natt
 * Student IDs: 920122577, 921771510, 920388011, 922883894
 * GitHub Name: babakmilani, AhsantMozhgan, SpindlyGold019, gpreet2
@@ -11,7 +11,6 @@
 * Description: Basic File System - Key File I/O Operations
 *
 **************************************************************/
-
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>			// for malloc
@@ -23,9 +22,9 @@
 
 
 #include "b_io.h"
-#include "freeSpace.h"
+#include "mapping.h"
 #include "mfs.h"
-#include "vcbInt.h"
+#include "vcb.h"
 #include "fsLow.h"
 #include "extTable.h"
 
@@ -81,10 +80,7 @@ b_io_fd b_getFCB ()
 	return (-1);  //all in use
 	}
 	
-// Interface to open a buffered file
-// Modification of interface for this assignment, flags match the Linux flags for open
-// O_RDONLY, O_WRONLY, or O_RDWR
-// filename = /usr/manish/desktop/test.txt
+
 b_io_fd b_open (char * filename, int flags)
 	{
 	b_io_fd returnFd;
@@ -134,7 +130,7 @@ b_io_fd b_open (char * filename, int flags)
 
 		//Finding the free space
 		cwdEntries[index].extentLocation = 
-			getConsecFreeSpace(vcb.freeSpaceBitMap, vcb.bitMapByteSize, EXTENT_BLOCK_SIZE);
+			getConsecFreeSpace(vcb.freeSpaceBitMap, vcb.bitMapByteSize, EXTTABLE_BLOCK_SIZE);
 		//Initializing the extent table with our free space
 		initExtentTable(cwdEntries[index].extentLocation);
 		int fileFreeSpace = getConsecFreeSpace(vcb.freeSpaceBitMap, vcb.bitMapByteSize, INIT_FILE_SIZE);
@@ -175,7 +171,7 @@ b_io_fd b_open (char * filename, int flags)
 		}
 	
 		//Write to disk
-		LBAwrite(extentTable, EXTENT_BLOCK_SIZE,cwdEntries[index].extentLocation);
+		LBAwrite(extentTable, EXTTABLE_BLOCK_SIZE,cwdEntries[index].extentLocation);
 		updateBitMap(vcb.freeSpaceBitMap);
 		LBAwrite(cwdEntries, DIRECTORY_BLOCKSIZE, cwdEntries[0].location);
 		//Reload cwd

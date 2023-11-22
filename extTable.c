@@ -1,5 +1,5 @@
 /**************************************************************
- Class:  CSC-415-01 Fall 2023
+ Class:  CSC-415-02 Fall 2023
 * Names: Babak Milani , Mozhgan Ahsant, Bisum Tiwana, Gurpreet Natt
 * Student IDs: 920122577, 921771510, 920388011, 922883894
 * GitHub Name: babakmilani, AhsantMozhgan, SpindlyGold019, gpreet2
@@ -10,24 +10,25 @@
 * Description: extent table.
 *
 **************************************************************/
+
 #include "extTable.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include "fsLow.h"
-#include "freeSpace.h"
-#include "vcbInt.h"
+#include "mapping.h"
+#include "vcb.h"
 
 //Helper Function
 //returns the size of the extent table
 int getExtentTableSize(extent* extentTable){
     int size = 0;
-    for(int i = 0; i < NUMBER_OF_EXTENT; i++){
+    for(int i = 0; i < NUMBER_OF_EXTTABLE; i++){
         if(extentTable[i].location != -1){  //-1 means free state
             size++;
         }else{
             //break loop
-            i = NUMBER_OF_EXTENT;
+            i = NUMBER_OF_EXTTABLE;
         }
     }
     return size;
@@ -53,8 +54,8 @@ void mergeNewRow(extent* extentTable){
 //takes the location of extent in free space bitMap
 //returns a pointer to extent table
 extent* getExtentTable(int extentLocation){
-    extent* extentTable = malloc(NUMBER_OF_EXTENT*sizeof(extent));
-    LBAread(extentTable, EXTENT_BLOCK_SIZE, extentLocation);
+    extent* extentTable = malloc(NUMBER_OF_EXTTABLE*sizeof(extent));
+    LBAread(extentTable, EXTTABLE_BLOCK_SIZE, extentLocation);
     return extentTable;
 }
 
@@ -62,16 +63,16 @@ extent* getExtentTable(int extentLocation){
 //it takes the location of extent location in bitMap
 
 void initExtentTable(int extentLocation){
-    extent* extentTable = malloc(NUMBER_OF_EXTENT*sizeof(extent));
-    LBAread(extentTable, EXTENT_BLOCK_SIZE, extentLocation);
+    extent* extentTable = malloc(NUMBER_OF_EXTTABLE*sizeof(extent));
+    LBAread(extentTable, EXTTABLE_BLOCK_SIZE, extentLocation);
     //initializing all in free state
     // free state --> -1
-    for(int i = 0; i < NUMBER_OF_EXTENT; i++){
+    for(int i = 0; i < NUMBER_OF_EXTTABLE; i++){
         extentTable[i].location = -1;
         extentTable[i].count = -1;
     }
     //Write our new extent table to the location
-    LBAwrite(extentTable, EXTENT_BLOCK_SIZE, extentLocation);
+    LBAwrite(extentTable, EXTTABLE_BLOCK_SIZE, extentLocation);
     free(extentTable);
 }
 
@@ -79,14 +80,14 @@ void initExtentTable(int extentLocation){
 int addToExtentTable(extent* extentTable, int location, int count){
     int flag = 0;
     //Iterating through the extent table
-    for(int i = 0; i < NUMBER_OF_EXTENT; i++){
+    for(int i = 0; i < NUMBER_OF_EXTTABLE; i++){
         //found the free extent
         if(extentTable[i].location == -1){  
             //Add to the extent table
             extentTable[i].location = location;
             extentTable[i].count = count;
             //exit loop
-            i = NUMBER_OF_EXTENT;
+            i = NUMBER_OF_EXTTABLE;
             flag = 1;
         }
     }
@@ -135,14 +136,14 @@ int getLBAFromFile(extent* extentTable, int location){
 //helper routine to set the extent table of the file to free state
 void releaseFile(int extentLocation){
     extent* extentTable = getExtentTable(extentLocation);
-    for(int i = 0; i < NUMBER_OF_EXTENT; i++){
+    for(int i = 0; i < NUMBER_OF_EXTTABLE; i++){
         if(extentTable[i].location != -1){
             releaseFreeSpace(vcb.freeSpaceBitMap, extentTable[i].location, extentTable[i].count);
             //printf("Extent, File: %d, %d\n",extentLocation, extentTable[i].location);
             extentTable[i].location = -1;
         }else{
             //exit loop
-            i = NUMBER_OF_EXTENT;
+            i = NUMBER_OF_EXTTABLE;
         }
     }
     updateBitMap(vcb.freeSpaceBitMap);

@@ -1,5 +1,5 @@
 /**************************************************************
- Class:  CSC-415-01 Fall 2023
+ Class:  CSC-415-02 Fall 2023
 * Names: Babak Milani , Mozhgan Ahsant, Bisum Tiwana, Gurpreet Natt
 * Student IDs: 920122577, 921771510, 920388011, 922883894
 * GitHub Name: babakmilani, AhsantMozhgan, SpindlyGold019, gpreet2
@@ -22,7 +22,7 @@
 #include "b_io.h"
 
 #include <dirent.h>
-#include "dirStructInt.h"
+#include "dirInit.h"
 #define FT_REGFILE	DT_REG
 #define FT_DIRECTORY DT_DIR
 #define FT_LINK	DT_LNK
@@ -116,4 +116,3 @@ int fs_stat(const char *path, struct fs_stat *buf);
 
 
 #endif
-

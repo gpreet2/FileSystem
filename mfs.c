@@ -1,5 +1,5 @@
 /**************************************************************
- Class:  CSC-415-01 Fall 2023
+ Class:  CSC-415-02 Fall 2023
 * Names: Babak Milani , Mozhgan Ahsant, Bisum Tiwana, Gurpreet Natt
 * Student IDs: 920122577, 921771510, 920388011, 922883894
 * GitHub Name: babakmilani, AhsantMozhgan, SpindlyGold019, gpreet2
@@ -11,12 +11,13 @@
 *               
 *
 **************************************************************/
+
 #include "mfs.h"
 #include "b_io.h"
 #include "fsLow.h"
-#include "dirStructInt.h"
-#include "vcbInt.h"
-#include "freeSpace.h"
+#include "dirInit.h"
+#include "vcb.h"
+#include "mapping.h"
 #include "extTable.h"
 
 #include <string.h>
@@ -707,8 +708,8 @@ int fs_delete(char* filename){
     cwdEntries[pi->value].location = -1;
     cwdEntries[pi->value].size = 0;
     releaseFile(cwdEntries[pi->value].extentLocation);
-    //printf("Releasing Extent:%d\n ", cwdEntries[pi->value].extentLocation);
-    releaseFreeSpace(vcb.freeSpaceBitMap, cwdEntries[pi->value].extentLocation, EXTENT_BLOCK_SIZE);
+    
+    releaseFreeSpace(vcb.freeSpaceBitMap, cwdEntries[pi->value].extentLocation, EXTTABLE_BLOCK_SIZE);
     cwdEntries[pi->value].extentLocation = -1;
 
     updateBitMap(vcb.freeSpaceBitMap);

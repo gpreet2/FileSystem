@@ -1,5 +1,5 @@
 /**************************************************************
- Class:  CSC-415-01 Fall 2023
+ Class:  CSC-415-02 Fall 2023
 * Names: Babak Milani , Mozhgan Ahsant, Bisum Tiwana, Gurpreet Natt
 * Student IDs: 920122577, 921771510, 920388011, 922883894
 * GitHub Name: babakmilani, AhsantMozhgan, SpindlyGold019, gpreet2
@@ -11,11 +11,9 @@
 * Description: Interface of basic I/O functions
 *
 **************************************************************/
-
 #ifndef _B_IO_H
 #define _B_IO_H
 #include <fcntl.h>
-
 
 typedef int b_io_fd;
 

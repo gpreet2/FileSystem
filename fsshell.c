@@ -1,5 +1,5 @@
 /**************************************************************
- Class:  CSC-415-01 Fall 2023
+ Class:  CSC-415-02 Fall 2023
 * Names: Babak Milani , Mozhgan Ahsant, Bisum Tiwana, Gurpreet Natt
 * Student IDs: 920122577, 921771510, 920388011, 922883894
 * GitHub Name: babakmilani, AhsantMozhgan, SpindlyGold019, gpreet2
@@ -103,8 +103,7 @@ int displayFiles (fdDir * dirp, int flall, int fllong)
 	printf("\n");
 	while (di != NULL) 
 		{
-			
-			if ((di->d_name[0] != '.') || (flall)) //if not all and starts with '.' it is hidden
+		if ((di->d_name[0] != '.') || (flall)) //if not all and starts with '.' it is hidden
 			{
 			if (fllong)
 				{
@@ -197,7 +196,6 @@ int cmd_ls (int argcnt, char *argvec[])
 	
 	if (optind < argcnt)
 		{
-			
 		//processing arguments after options
 		for (int k = optind; k < argcnt; k++)
 			{
@@ -223,12 +221,9 @@ int cmd_ls (int argcnt, char *argvec[])
 		}
 	else   // no pathname/filename specified - use cwd
 		{
-		
 		char * path = fs_getcwd(cwd, DIRMAX_LEN);	//get current working directory
-		
 		fdDir * dirp;
 		dirp = fs_opendir (path);
-		
 		return (displayFiles (dirp, flall, fllong));
 		}
 #endif
@@ -303,11 +298,11 @@ int cmd_cat (int argcnt, char *argvec[])
 
 
         do 
-                {					
-                readcnt = b_read (testfs_src_fd, buf, BUFFERLEN - 1);
+                {
+                readcnt = b_read (testfs_src_fd, buf, BUFFERLEN-1);
                 buf[readcnt] = '\0';
-				printf("%s", buf);
-                } while (readcnt + 1 == BUFFERLEN );
+                printf("%s", buf);
+                } while (readcnt == BUFFERLEN-1);
         b_close (testfs_src_fd);
 #endif
         return 0;
@@ -367,21 +362,8 @@ int cmd_cp (int argcnt, char *argvec[])
 int cmd_mv (int argcnt, char *argvec[])
 	{
 #if (CMDMV_ON == 1)				
-	if (argcnt != 3)
-		{
-		printf ("Usage: mv src dest\n");
-		return -1;
-		}
-		
-	char * src = argvec[1];	
-	char * dest = argvec[2];
-	//Call fs_move to move the file to another directory/file
-	if(fs_move(src, dest) == 0){
-		printf("moved success\n");
-	}else{
-		printf("mv fails\n");
-	}
-
+	return -99;
+	// **** TODO ****  For you to implement	
 #endif
 	return 0;
 	}
@@ -472,7 +454,7 @@ int cmd_cp2l (int argcnt, char *argvec[])
 		{
 		readcnt = b_read (testfs_fd, buf, BUFFERLEN);
 		write (linux_fd, buf, readcnt);
-		} while (readcnt == BUFFERLEN );
+		} while (readcnt == BUFFERLEN);
 	b_close (testfs_fd);
 	close (linux_fd);
 #endif
@@ -529,7 +511,6 @@ int cmd_cp2fs (int argcnt, char *argvec[])
 int cmd_cd (int argcnt, char *argvec[])
 	{
 #if (CMDCD_ON == 1)	
-	
 	if (argcnt != 2)
 		{
 		printf ("Usage: cd path\n");
@@ -546,9 +527,7 @@ int cmd_cd (int argcnt, char *argvec[])
 			path[strlen(path) - 1] = 0;
 			}
 		}
-		
 	int ret = fs_setcwd (path);
-	
 	if (ret != 0)	//error
 		{
 		printf ("Could not change path to %s\n", path);
@@ -772,6 +751,65 @@ int main (int argc, char * argv[])
 
 	using_history();
 	stifle_history(200);	//max history entries
+        printf ("|---------------------------------|\n");
+        printf ("|------- Command ------|- Status -|\n");
+#if (CMDLS_ON == 1)
+        printf ("| ls                   |    ON    |\n");
+#else
+        printf ("| ls                   |    OFF   |\n");  
+#endif
+#if (CMDCD_ON == 1)
+        printf ("| cd                   |    ON    |\n");  
+#else
+        printf ("| cd                   |    OFF   |\n");  
+#endif
+#if (CMDMD_ON == 1)
+        printf ("| md                   |    ON    |\n");  
+#else
+        printf ("| md                   |    OFF   |\n");  
+#endif
+#if (CMDPWD_ON == 1)
+        printf ("| pwd                  |    ON    |\n");  
+#else
+        printf ("| pwd                  |    OFF   |\n");  
+#endif
+#if (CMDTOUCH_ON == 1)
+        printf ("| touch                |    ON    |\n");  
+#else
+        printf ("| touch                |    OFF   |\n");  
+#endif
+#if (CMDCAT_ON == 1)
+        printf ("| cat                  |    ON    |\n");  
+#else
+        printf ("| cat                  |    OFF   |\n");  
+#endif
+#if (CMDRM_ON == 1)
+        printf ("| rm                   |    ON    |\n");  
+#else
+        printf ("| rm                   |    OFF   |\n");  
+#endif
+#if (CMDCP_ON == 1)
+        printf ("| cp                   |    ON    |\n");  
+#else
+        printf ("| cp                   |    OFF   |\n");  
+#endif
+#if (CMDMV_ON == 1)
+        printf ("| mv                   |    ON    |\n");  
+#else
+        printf ("| mv                   |    OFF   |\n");  
+#endif
+#if (CMDCP2FS_ON == 1)
+        printf ("| cp2fs                |    ON    |\n");  
+#else
+        printf ("| cp2fs                |    OFF   |\n");  
+#endif
+#if (CMDCP2L_ON == 1)
+        printf ("| cp2l                 |    ON    |\n");  
+#else
+        printf ("| cp2l                 |    OFF   |\n");
+#endif
+        printf ("|---------------------------------|\n");
+
 	
 	while (1)
 		{
