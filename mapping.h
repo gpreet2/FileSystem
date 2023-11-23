@@ -8,20 +8,27 @@
 *
 * File: mapping.h
 *
-* Description: Interface for bitMap
+* Description: The mapping.h header file acts as an interface for abstracting the
+* implementation details of managing disk space through a bitmap. It allows for a
+* standardized approach to handle disk block allocation and release within the
+* context of a basic file system project.
 *
 **************************************************************/
 
 #ifndef MAPPING_H
 #define MAPPING_H
 
-#define MAPPING_SIZE 5   //size of bitMap in VCB is 5 blocks
-#define MAPPING_LOCATION 1 // location in VCB is at index 1
+#define MAPPING_SIZE 5   // Represents the size of the bitMap in VCB, occupying 5 blocks
+#define MAPPING_LOCATION 1 // Represents the index location in VCB where the bitMap is stored
 
 
+//Retrieve a contiguous free space in the disk bitmap
+int getConsecFreeSpace(unsigned char* bitMap, int bitMapSize, int numOfBlocks);
 
-int getConsecFreeSpace(unsigned char* bitMap, int bitMapSize, int numOfBlocks); //get contiguous free space in disk
-int releaseFreeSpace(unsigned char* bitMap, int location, int size);    //freeing the space in disk
-void updateBitMap(unsigned char* bitMap);   //write back to disk.
+//Free up space in the disk by updating the bitmap
+int releaseFreeSpace(unsigned char* bitMap, int location, int size);
+
+//Write the updated bitmap back to the disk
+void updateBitMap(unsigned char* bitMap);
 
 #endif

@@ -8,7 +8,10 @@
 *
 * File: fsShell.c
 *
-* Description: Main driver for file system assignment.
+* Description: Main driver for file system assignment. The fsShell.c file serves
+* as the core engine for simulating and testing basic file system operations,
+* providing an interactive interface for users to interact with and manipulate
+* file system elements.
 *
 * Make sure to set the #defined on the CMDxxxx_ON from 0 to 1 
 * when you are ready to test that feature
@@ -77,8 +80,8 @@ dispatch_t dispatchTable[] = {
 	{"mv", cmd_mv, "Moves a file - source dest"},
 	{"md", cmd_md, "Make a new directory"},
 	{"rm", cmd_rm, "Removes a file or directory"},
-        {"touch",cmd_touch, "Touches/Creates a file"},
-        {"cat", cmd_cat, "Limited version of cat that displace the file to the console"},
+    {"touch",cmd_touch, "Touches/Creates a file"},
+    {"cat", cmd_cat, "Limited version of cat that displace the file to the console"},
 	{"cp2l", cmd_cp2l, "Copies a file from the test file system to the linux file system"},
 	{"cp2fs", cmd_cp2fs, "Copies a file from the Linux file system to the test file system"},
 	{"cd", cmd_cd, "Changes directory"},
@@ -101,8 +104,7 @@ int displayFiles (fdDir * dirp, int flall, int fllong)
 	
 	di = fs_readdir (dirp);
 	printf("\n");
-	while (di != NULL) 
-		{
+	while (di != NULL) {
 		if ((di->d_name[0] != '.') || (flall)) //if not all and starts with '.' it is hidden
 			{
 			if (fllong)

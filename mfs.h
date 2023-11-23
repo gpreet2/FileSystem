@@ -36,12 +36,12 @@ typedef u_int32_t uint32_t;
 
 
 //Global variables
+extern char * cwdPath; 			//Stores the path of the current working directory
+extern dirEntry * cwdEntries;	//Stores information about the current working directory
 
-extern char * cwdPath; //holds the current working dir path
-extern dirEntry * cwdEntries;	//holds the current working directory info
+void initGlobalVar();		 // Initializes global variables
+void freeGlobalVar();		// Frees memory allocated to global variables
 
-void initGlobalVar();
-void freeGlobalVar();
 // This structure is returned by fs_readdir to provide the caller with information
 // about each file as it iterates through a directory
  struct fs_diriteminfo
@@ -69,18 +69,16 @@ typedef struct
 	} fdDir;
 
 //This is a structure used as a return value of the private function parsePath
-typedef struct
-	{
+typedef struct {
 		dirEntry* DEPointer;
 		int value;
 		char path[256];
-
 	} pathInfo;
 
 //Helper Function
-pathInfo* parsePath(const char *pathname);
-char * getParentDirectory(const char *pathname);
-char * getLastPathElement(const char *pathname);
+pathInfo* parsePath(const char *pathname);			//Parses the path
+char * getParentDirectory(const char *pathname);	//Gets the parent directory
+char * getLastPathElement(const char *pathname);	//Gets the last element in the path
 
 // Key directory functions
 int fs_mkdir(const char *pathname, mode_t mode);
@@ -97,7 +95,7 @@ int fs_setcwd(char *pathname);   //linux chdir
 int fs_isFile(char * filename);	//return 1 if file, 0 otherwise
 int fs_isDir(char * pathname);		//return 1 if directory, 0 otherwise
 int fs_delete(char* filename);	//removes a file
-int fs_move(char* src, char* dest);
+int fs_move(char* src, char* dest);		//Move a file
 
 // This is the strucutre that is filled in from a call to fs_stat
 struct fs_stat

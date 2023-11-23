@@ -51,28 +51,40 @@ typedef u_int32_t uint32_t;
 typedef unsigned long long ull_t;
 
 
+//This function initializes the file system partition by creating a file with the
+//specified volume and block size.
+//If the file already exists, it ignores the input values for volume size and block size.
+//It returns 0 on success, -1 if the file exists but cannot be opened for writing, -2 if 
+//there's insufficient space for the volume.
+//It also fills volSize and blockSize with the final volume and block size after initialization.
+int startPartitionSystem (char *filename, uint64_t *volSize, uint64_t *blockSize);
 
-int startPartitionSystem (char * filename, uint64_t * volSize, uint64_t * blockSize);
-
+//Closes the partition system.
 int closePartitionSystem ();
 
+//Initializes the file system with the given number of blocks and block size.
 int initFileSystem (uint64_t numberOfBlocks, uint64_t blockSize);
 void exitFileSystem ();
 
+//Writes data to Logical Block Address (LBA) on the disk.
 uint64_t LBAwrite (void * buffer, uint64_t lbaCount, uint64_t lbaPosition);
 
+//Reads data from Logical Block Address (LBA) on the disk.
 uint64_t LBAread (void * buffer, uint64_t lbaCount, uint64_t lbaPosition);
 
-void runFSLowTest();  //Do not use this, for testing only
+//Runs the File System Low-level Test only.
+void runFSLowTest(); 
 
 #define MINBLOCKSIZE 512
 #define PART_SIGNATURE	0x526F626572742042
 #define PART_SIGNATURE2	0x4220747265626F52
 #define PART_CAPTION "CSC-415 - Operating Systems File System Partition Header\n\n"
 
+//Definitions for partition status.
 #define	PART_ACTIVE 		1
 #define	PART_INACTIVE 		0
 
+//Error codes for partition handling
 #define	PART_NOERROR 		0
 #define PART_ERR_INVALID	-4
 

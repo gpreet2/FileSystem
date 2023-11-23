@@ -21,17 +21,19 @@
 #define MAX_DIRENT_SIZE 48
 #define DE_STRUCT_SIZE 64
 
-//Directory Entry struct with the size of 64 bytes
-typedef struct dirEntry{
+//Defining a Directory Entry struct with a size of 64 bytes
+typedef struct dirEntry {
 	char name[32];
 	time_t created;
 	time_t lastModified;
 	int location;
 	int size;
-	//Free state is -1 || is a file directory entry 0 || is a directory 1
+
+	//Definition://Free state: -1 indicates free space
+	//File directory entry: 0 denotes a file
+	//Directory: 1 indicates a directory
 	int dirType;
 	int extentLocation;
-	
 } dirEntry;
 
 #endif
