@@ -8,34 +8,29 @@
 *
 * File: vcb.h
 *
-* Description: Volume Control Block (VCB) Interface. This interface establishes
-* the structure and essential attributes needed to manage the volume's metadata,
-* track available space, and maintain the organization of the file system.
-*
+* Description: VCB Interface
 **************************************************************/
 
 #ifndef VCB_H
-#define _VCB_H
-//Size of VCB is 24 bytes
-//Volume Control Block struct
+#define VCB_H
 
-typedef struct VCB {
-	//Unique magic number identifying the VCB
-	long signature;
-	//Total number of blocks in the volume
-	int numBlocks;
-	//Size of each block in bytes
-	int blockSize;
-	//Number of free blocks in the volume
-	int freeSpace;
-	//Memory pointer for the free space bitmap
-	unsigned char* freeSpaceBitMap;
-	//Size of the bitmap in bytes
-	int bitMapByteSize;
-	//Index of the root directory block
-	int RootDir;
-} VCB;
+// Size of VCB is 24 bytes
+// Volume Control Block struct
 
-extern VCB vcb;		// External declaration of VCB variable
+typedef struct VolumeControlBlock {
+    // Unique magic number
+    long signature;
+
+    int numBlocks;
+    int blockSize;
+    int freeSpace;
+    // Memory Pointer allocated at runtime
+    unsigned char* freeSpaceBitMap;
+    int bitMapByteSize;
+    int rootDirectory;
+} VolumeControlBlock;
+
+extern VolumeControlBlock vcb;
 
 #endif
+

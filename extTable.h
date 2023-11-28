@@ -8,9 +8,7 @@
 *
 * File: extTable.h
 *
-* Description: The extTable.h file provides a set of functions and structures
-* essential for managing file extents within the file system, facilitating
-* allocation, tracking, and deallocation of file blocks on the disk.
+* Description: extent table interface
 *
 **************************************************************/
 
@@ -18,37 +16,23 @@
 #define EXTTABLE_H
 
 #define NUMBER_OF_EXTTABLE 64	
-#define EXTTABLE_BLOCK_SIZE 1	//Extent table size is 1 block (512 bytes)
+#define EXTTABLE_BLOCK_SIZE 1	//size of extent table is 1 block --> 512 bytes
 
 typedef struct extent {
-	int location;	 	//Starting location of the extent
-	int count;	    	//Number of blocks in the extent
+	int location;
+	int count;
 	
 } extent;
 
-//Helper routines that helps implementation of extent table
-//Retrieve extent table at given location
-extent* getExtentTable(int extentLocation);
+//helper routines that helps implementation of extent table
 
-//Initialize an extent table at a given location	
+extent* getExtentTable(int extentLocation);	
 void initExtentTable(int extentLocation);
-
-//Add entry to extent table
 int addToExtentTable(extent* extentTable, int location, int count);
-
-//Get Logical Block Address from extent table
 int getLBAFromFile(extent* extentTable, int location);
-
-//Release all blocks associated with the file
 void releaseFile(int extentLocation);
-
-//Release blocks no longer part of the file
 void releaseFreeBlocksExtent(extent* extentTable, int location);
-
-//Update the extent table
 void updateExtentTable(extent* extentTable, int extentLocation);
-
-//Display content of the extent table
 void printExtentTable(extent* extentTable);
 
 #endif
