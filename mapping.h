@@ -15,13 +15,13 @@
 #ifndef MAPPING_H
 #define MAPPING_H
 
-#define MAPPING_SIZE 5   //size of bitMap in VCB is 5 blocks
-#define MAPPING_LOCATION 1 // location in VCB is at index 1
+#define MAPPING_SIZE 5   
+#define MAPPING_LOCATION 1 
 
 
 
-int getConsecFreeSpace(unsigned char* bitMap, int bitMapSize, int numOfBlocks); //get contiguous free space in disk
-int releaseFreeSpace(unsigned char* bitMap, int location, int size);    //freeing the space in disk
-void updateBitMap(unsigned char* bitMap);   //write back to disk.
+int getConsecFreeSpace(unsigned char* bitMap, int bitMapSize, int numOfBlocks); 
+int releaseFreeSpace(unsigned char* bitMap, int location, int size);   
+void updateBitMap(unsigned char* bitMap);   
 
 #endif

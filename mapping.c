@@ -8,7 +8,7 @@
 *
 * File: mapping.c
 *
-* Description: Implementation of functions related to freespace volume
+* Description: freespace volume
 *
 **************************************************************/
 
@@ -18,79 +18,138 @@
 #include <stdlib.h>
 #include "fsLow.h"
 
-// Function to count used space in freespace bitmap
-int countUsedSpace(unsigned char myByte) {
-    int count = 0;
-    for (int i = 7; i >= 0; i--) {
-        if ((myByte & (1 << i)) != 0) {
-            count++;
-        }
+
+//  1 = used
+//  0 = free
+int bitCounter(unsigned char myByte){
+    int x = 0;
+    if((myByte & 0x80) == 0x80) x++;
+    if((myByte & 0x40) == 0x40) x++;
+    if((myByte & 0x20) == 0x20) x++;
+    if((myByte & 0x10) == 0x10) x++;
+    if((myByte & 0x08) == 0x08) x++;
+    if((myByte & 0x04) == 0x04) x++;
+    if((myByte & 0x02) == 0x02) x++;
+    if((myByte & 0x01) == 0x01) x++;
+    return x;
+} 
+
+unsigned char mask(int offset){
+    switch(offset){
+        case 0:
+            return 0x80;
+        case 1:
+            return 0x40;
+        case 2:
+            return 0x20;
+        case 3:
+            return 0x10;
+        case 4:
+            return 0x08;
+        case 5:
+            return 0x04;
+        case 6:
+            return 0x02;
+        case 7: 
+            return 0x01;
+        default:
+            printf("Offset must be between 0-7\n");
+            return 0x00;
     }
-    return count;
 }
 
-// Function to create a mask based on the offset
-unsigned char createMask(int offset) {
-    return (1 << (7 - offset));
+//  1 = used
+//  0 = free
+int freeSpaceCounter(unsigned char myByte){
+    return 8 - bitCounter(myByte); // gives you the remaining number of free blocks in a byte
+};
+
+
+void setABit(unsigned char *bitMap, int offset){
+    
+    int byteIndex = offset/8;
+    unsigned char tempByte = mask((offset % 8));
+    bitMap[byteIndex] = (bitMap[byteIndex] | tempByte);
 }
 
-// Function to count free blocks in bitmap
-int countFreeSpace(unsigned char myByte) {
-    return 8 - countUsedSpace(myByte);
+
+
+void clearABit(unsigned char *bitMap, int offset){
+    int byteIndex = offset/8;   // 1 byte = 8 bits
+    unsigned char tempByte = mask((offset % 8));
+    tempByte = ~tempByte;
+    bitMap[byteIndex] = (bitMap[byteIndex] & tempByte);
 }
 
-// Function to set a bit at a given offset in the bitmap
-void setBit(unsigned char *bitMap, int offset) {
-    int byteIndex = offset / 8;
-    int bitOffset = offset % 8;
-    bitMap[byteIndex] |= (1 << (7 - bitOffset));
+int checkABit(unsigned char myByte, int offset){
+    unsigned char tempByte = mask(offset);
+    if((myByte & tempByte) == 0x00){
+        return 0;
+    }else{
+        return 1;
+    }
 }
 
-// Function to clear a bit at a given offset in the bitmap
-void clearBit(unsigned char *bitMap, int offset) {
-    int byteIndex = offset / 8;
-    int bitOffset = offset % 8;
-    bitMap[byteIndex] &= ~(1 << (7 - bitOffset));
-}
 
-// Function to check the state of a bit at a given offset in the bitmap
-int checkBit(unsigned char myByte, int offset) {
-    return ((myByte & createMask(offset)) != 0) ? 1 : 0;
-}
+/**
+ * Helper routine 
 
-// Function to get consecutive free space in the bitmap
-int getConsecutiveFreeSpace(unsigned char* bitMap, int bitMapSize, int numOfBlocks) {
-    int firstFreeBlock = -1;
-    int freeConsecutiveBytes = 0;
+*/
+int getConsecFreeSpace(unsigned char* bitMap, int bitMapSize, int numOfBlocks){
+    int firstFreeBlock;
+    int firstFreeByte;
+    int minFreeBytesNeeded = (numOfBlocks + 7)/8;
+    int freeConsecBytes = 0;
 
-    for (int i = 0; i < bitMapSize; i++) {
-        if (bitMap[i] == 0x00) {
-            if (freeConsecutiveBytes == 0) {
-                firstFreeBlock = i * 8;
+    for(int i =0; i < bitMapSize; i++){
+        if(bitMap[i] == 0x00){
+            if(freeConsecBytes == 0){
+                firstFreeBlock = i*8;
+                firstFreeByte = i; 
             }
-            freeConsecutiveBytes++;
-        } else {
-            freeConsecutiveBytes = 0;
+            freeConsecBytes++;
+
+        }else{
+            freeConsecBytes = 0;
         }
 
-        if (freeConsecutiveBytes == numOfBlocks) {
-            return firstFreeBlock;
+        if(freeConsecBytes == minFreeBytesNeeded){
+            
+            for(int j = 7; j >= 0; j--){
+                if(checkABit(bitMap[firstFreeByte-1], j) == 0){
+                    firstFreeBlock = (firstFreeByte-1)*8 + j;
+                }else{
+                    
+                    j = -1;
+                }
+            }
+            //break the for loop
+            i = bitMapSize;
         }
     }
 
-    return -1;
-}
+    //Fail to find free blocks
+    if(freeConsecBytes == 0){
+        return -1;
+    }
 
-// Function to release a block in the bitmap
-int releaseFreeSpace(unsigned char* bitMap, int location, int size) {
-    for (int i = location; i < location + size; i++) {
-        clearBit(bitMap, i);
+    for(int i = 0; i < numOfBlocks; i++){
+        setABit(bitMap, firstFreeBlock + i);
+    }
+
+    return firstFreeBlock;
+}
+//helper routine 
+
+int releaseFreeSpace(unsigned char* bitMap, int location, int size){
+    
+    for(int i = location; i < location+size; i++){
+        clearABit(bitMap, i);
+        
     }
     return 0;
 }
 
-// Function to update the bitmap on the disk
-void updateBitmap(unsigned char* bitMap) {
-    LBAwrite(bitMap, MAPPING_SIZE, MAPPING_LOCATION);
+void updateBitMap(unsigned char* bitMap){
+	LBAwrite(bitMap, MAPPING_SIZE, MAPPING_LOCATION);
 }
-

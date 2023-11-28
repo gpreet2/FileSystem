@@ -130,10 +130,10 @@ b_io_fd b_open (char * filename, int flags)
 
 		//Finding the free space
 		cwdEntries[index].extentLocation = 
-			getConsecutiveFreeSpace(vcb.freeSpaceBitMap, vcb.bitMapByteSize, EXTTABLE_BLOCK_SIZE);
+			getConsecFreeSpace(vcb.freeSpaceBitMap, vcb.bitMapByteSize, EXTTABLE_BLOCK_SIZE);
 		//Initializing the extent table with our free space
 		initExtentTable(cwdEntries[index].extentLocation);
-		int fileFreeSpace = getConsecutiveFreeSpace(vcb.freeSpaceBitMap, vcb.bitMapByteSize, INIT_FILE_SIZE);
+		int fileFreeSpace = getConsecFreeSpace(vcb.freeSpaceBitMap, vcb.bitMapByteSize, INIT_FILE_SIZE);
 		
 		if(fileFreeSpace == -1 || cwdEntries[index].extentLocation == -1){
 			printf("No more free space\n");
@@ -172,7 +172,7 @@ b_io_fd b_open (char * filename, int flags)
 	
 		//Write to disk
 		LBAwrite(extentTable, EXTTABLE_BLOCK_SIZE,cwdEntries[index].extentLocation);
-		updateBitmap(vcb.freeSpaceBitMap);
+		updateBitMap(vcb.freeSpaceBitMap);
 		LBAwrite(cwdEntries, DIRECTORY_BLOCKSIZE, cwdEntries[0].location);
 		//Reload cwd
 		LBAread(cwdEntries, DIRECTORY_BLOCKSIZE, cwdEntries[0].location);
@@ -297,14 +297,14 @@ int b_write (b_io_fd fd, char * buffer, int count)
 	//Check if we need more blocks
 	if(count > remainingBytes){
 		//get more space using helper routing getConsecFreeSpace
-		int newFileLocation = getConsecutiveFreeSpace(vcb.freeSpaceBitMap, vcb.bitMapByteSize, ADDITIONAL_FILE_BLOCK);
+		int newFileLocation = getConsecFreeSpace(vcb.freeSpaceBitMap, vcb.bitMapByteSize, ADDITIONAL_FILE_BLOCK);
 		//check if there is enough space in disk
 		if(newFileLocation == -1){
 			printf("Disk is full\n");
 			return -1;
 		}
 		//update the free space map
-		updateBitmap(vcb.freeSpaceBitMap);
+		updateBitMap(vcb.freeSpaceBitMap);
 		//update the file size
 		fcbArray[fd].fileBlocks += ADDITIONAL_FILE_BLOCK;	
 		//update extent table
@@ -512,7 +512,7 @@ int b_close (b_io_fd fd)
 			//Release the free blocks that is not needed
 			releaseFreeBlocksExtent(fcbArray[fd].extentTable, location);
 			updateExtentTable(fcbArray[fd].extentTable, fcbArray[fd].extentLocation);
-			updateBitmap(vcb.freeSpaceBitMap);
+			updateBitMap(vcb.freeSpaceBitMap);
 			//printExtentTable(fcbArray[fd].extentTable);
 			
 		}

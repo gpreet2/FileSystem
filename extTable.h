@@ -16,7 +16,7 @@
 #define EXTTABLE_H
 
 #define NUMBER_OF_EXTTABLE 64	
-#define EXTTABLE_BLOCK_SIZE 1	//size of extent table is 1 block --> 512 bytes
+#define EXTTABLE_BLOCK_SIZE 1	
 
 typedef struct extent {
 	int location;
@@ -24,7 +24,7 @@ typedef struct extent {
 	
 } extent;
 
-//helper routines that helps implementation of extent table
+
 
 extent* getExtentTable(int extentLocation);	
 void initExtentTable(int extentLocation);
